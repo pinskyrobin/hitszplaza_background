@@ -1,7 +1,7 @@
 package com.hitszplaza.background.service;
 
-import org.json.JSONObject;
+import com.hitszplaza.background.exception.WeChatException;
 
 public interface UserInfoService {
-    String findAll(Integer number);
+    String findAll(Integer number) throws WeChatException;
 }

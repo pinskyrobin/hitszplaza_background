@@ -2,8 +2,6 @@ package com.hitszplaza.background.controller;
 
 import com.hitszplaza.background.service.impl.UserInfoServiceImpl;
 import com.hitszplaza.background.utils.RedisUtil;
-import com.sun.istack.Nullable;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

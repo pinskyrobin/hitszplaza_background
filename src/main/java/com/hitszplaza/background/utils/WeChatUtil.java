@@ -3,7 +3,7 @@ package com.hitszplaza.background.utils;
 import com.hitszplaza.background.constant.WeChatAPIConstant;
 import com.hitszplaza.background.pojo.Access;
 import com.hitszplaza.background.pojo.QueryDTO;
-import exception.WeChatException;
+import com.hitszplaza.background.exception.WeChatException;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +19,19 @@ public class WeChatUtil {
 
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private RedisUtil redisUtil;
+
+    private String accessToken;
+
+    public void updateAccessToken() {
+        this.accessToken = redisUtil.get("accessToken");
+    }
+
+    public String getAccessToken() {
+        return this.accessToken;
+    }
 
     // 获取access_token的接口地址, 限2000（次/天）
     public Access getToken() {
@@ -46,6 +59,10 @@ public class WeChatUtil {
     }
 
     public String post(String url, String query) {
+        // 获取最新的access_token
+        updateAccessToken();
+        // 为 url 添加access_token
+        url = url.concat(getAccessToken());
         String response = null;
         QueryDTO queryDTO = new QueryDTO(query);
         try{
