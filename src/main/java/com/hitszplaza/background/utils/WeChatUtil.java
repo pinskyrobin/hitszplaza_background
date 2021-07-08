@@ -58,6 +58,16 @@ public class WeChatUtil {
         return token;
     }
 
+    public Integer getCount(String database) {
+        // 获取最新的access_token
+        updateAccessToken();
+        String url = WeChatAPIConstant.WX_API_HOST +
+                "/tcb/databasecount?access_token=";
+        String query = String.format("db.collection(\"%s\").count()", database);
+        String response = post(url, query);
+        return (Integer) new JSONObject(response).get("count");
+    }
+
     public String post(String url, String query) {
         // 获取最新的access_token
         updateAccessToken();
