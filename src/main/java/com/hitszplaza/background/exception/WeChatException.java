@@ -1,4 +1,4 @@
-package exception;
+package com.hitszplaza.background.exception;
 
 public class WeChatException extends RuntimeException{
     public WeChatException(){}
