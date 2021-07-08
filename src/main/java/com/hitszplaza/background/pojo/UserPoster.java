@@ -2,12 +2,14 @@ package com.hitszplaza.background.pojo;
 
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 @Data
 public class UserPoster {
     private String _id;
-    private String insertImageUrl;
+    private ArrayList<String> insertImageUrl;
+    private ArrayList<String> likeList;
     private Boolean isAnoymous;
     private String openid;
     private String text;
