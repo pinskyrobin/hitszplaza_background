@@ -34,7 +34,7 @@ public class UserPosterServiceImpl implements UserPosterService {
     public String updateStatus(String id, Boolean valid) {
         // 请求地址
         String url = WeChatAPIConstant.WX_API_HOST +
-                "/tcb/databasequery?access_token=";
+                "/tcb/databaseupdate?access_token=";
         String tmp_valid = valid ? "true" : "false";
         // 数据库查询语句
         String query = "db.collection(\"userPoster\")"
