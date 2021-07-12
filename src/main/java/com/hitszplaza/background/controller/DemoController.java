@@ -13,16 +13,9 @@ public class DemoController {
     @Autowired
     private RedisUtil redisUtil;
 
-    @Autowired
-    private UserInfoServiceImpl userInfoService;
-
     @GetMapping("/accessToken")
     public String demo() {
         return redisUtil.get("accessToken");
     }
 
-    @PostMapping("/userInfo")
-    public String getUserInfo(@RequestParam(required = false) Integer number) {
-        return userInfoService.findAll(number);
-    }
 }
