@@ -8,8 +8,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -19,32 +19,10 @@ public class UserPosterServiceImpl implements UserPosterService {
     private WeChatUtil weChatUtil;
 
     @Override
-    public ArrayList<String> findAll(Integer number) {
-        // 请求地址
-        String url = WeChatAPIConstant.WX_API_HOST +
-                "/tcb/databasequery?access_token=";
+    public List<Object> findAll(Integer number) {
         // 数据库查询语句
-        String pre_query = "db.collection(\"userPoster\")";
-        // 默认每次查询20条
-        if (number == null) {
-            number = 20;
-        }
-        int count = weChatUtil.getCount("userPoster");
-        int skipCount;
-        // 查询轮数
-        int batchTimes = (int) Math.ceil((double) count / number);
-
-        ArrayList<String> response = new ArrayList<>();
-        String raw_response;
-
-        for (int i = 0; i < batchTimes; i++) {
-            skipCount = i * number;
-            String query = pre_query + String.format(".skip(%d).limit(%d).get()", skipCount, number);
-            raw_response = weChatUtil.post(url, query);
-            //TODO:数据结果不够优雅,还需修改!
-            response.add(new JSONObject(raw_response).getJSONArray("data").toString());
-        }
-        return response;
+        String preQuery = "db.collection(\"userPoster\")";
+        return weChatUtil.queryBatch(number, "userPoster", preQuery);
     }
 
     @Override
@@ -84,8 +62,10 @@ public class UserPosterServiceImpl implements UserPosterService {
     }
 
     @Override
-    public String findAllWithOpenId(String openId) {
-        return null;
+    public List<Object> findAllWithOpenId(Integer number, String openId) {
+        // 数据库查询语句
+        String preQuery = String.format("db.collection(\"userPoster\").where({openid:\"%s\"})", openId);
+        return weChatUtil.queryBatch(number, "userPoster", preQuery);
     }
 
     @Override
