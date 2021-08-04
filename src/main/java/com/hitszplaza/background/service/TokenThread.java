@@ -5,6 +5,7 @@ import com.hitszplaza.background.utils.RedisUtil;
 import com.hitszplaza.background.utils.WeChatUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,32 +23,24 @@ public class TokenThread implements Runnable {
     }
 
     @Override
+    @Scheduled(fixedRate = 6000000)
     public void run() {
-        while (true) {
+        Access access = weChatUtil.getToken();
+        try {
+            // 更新AccessToken
+            redisUtil.update("accessToken", access.getAccessToken());
+            log.info("获取的accessToken为" + access.getAccessToken());
+        } catch (Exception e) {
             try {
-                Access access = weChatUtil.getToken();
-                if (access != null) {
-                    if (access.getAccessToken() != null) {
-                        // 更新AccessToken
-                        redisUtil.update("accessToken", access.getAccessToken());
-                        log.info("获取的accessToken为" + access.getAccessToken());
-                    }
-                }
-                assert access != null;
-                if (access.getAccessToken() != null) {
-                    Thread.sleep(access.getExpireTime() * 1000);
-                } else {
-                    // 如果access_token为null，30秒后再获取
-                    Thread.sleep(30 * 1000);
-                }
-            } catch (InterruptedException e) {
-                try {
-                    Thread.sleep(30 * 1000);
-                } catch (InterruptedException e1) {
-                    log.error("{}", e1);
-                }
-                log.error("{}", e);
+                Thread.sleep(30 * 1000);
+                // 更新AccessToken
+                redisUtil.update("accessToken", access.getAccessToken());
+                log.info("重新获取的accessToken为" + access.getAccessToken());
+            } catch (InterruptedException e1) {
+                log.error("{1}", e1);
             }
+            log.error("{1}", e);
         }
     }
+
 }
