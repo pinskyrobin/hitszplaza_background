@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,8 @@ public class WeChatUtil {
     }
 
     /**
-     * @Description: 获取access_token的接口地址, 限2000(次/天)
+     * @description 获取access_token的接口地址, 限2000(次/天)
+     * @return Acess的pojo对象,含accessId(仅做主键用),accessToken及过期时间expireTime(通常为7200s)
      **/
     public Access getToken() {
         Access token;
@@ -63,11 +63,11 @@ public class WeChatUtil {
     }
 
     /**
-     * @description: 分批获取集合记录
+     * @description 分批获取集合记录
      * @param number: 每批记录的数量
      * @param database: 记录所属集合
      * @param preQuery: 查询语句前部分
-     * @return List\<Object\>: 返回jsonArray数组,每一个元素为查询所得记录
+     * @return List/<Object/>形式的jsonArray数组,每一个元素为查询所得记录
      **/
     public List<Object> queryBatch(Integer number, String database, String preQuery) {
         // 获取最新的access_token
@@ -104,8 +104,8 @@ public class WeChatUtil {
         return jsonResponse.toList();
     }
     /**
-     * @description: 通用微信请求模板
-     * @method: POST
+     * @description 通用微信请求模板
+     * @method POST
      **/
     public String post(String url, String query) {
         // 获取最新的access_token
