@@ -1,24 +1,19 @@
 package com.hitszplaza.background.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 public interface UserPosterService {
-    List<Object> findAll(Integer number);
+    String findAll(Integer pageNo, Integer pageSize);
 
     String updateOneStatus(String id, Boolean valid);
 
-    //TODO:任务列表(优先度依次递减)
+    String updateAllStatusWithOpenId(String openId, Boolean valid);
+
     String deleteOne(String id);
 
-    List<Object> findAllWithOpenId(Integer number, String openId);
+    String findAllWithOpenId(Integer pageNo, Integer pageSize, String openId);
 
-    String findAllWithType(String type);
+    String findAllWithType(Integer pageNo, Integer pageSize, String type);
 
-    String findAllWithTime(Date time);
+    String findAllWithTime(Integer pageNo, Integer pageSize, Long startTime, Long endTime);
 
-    String findAllWithAnoymous(Integer number);
-
-    String updateAllStatusWithOpenId(String openId);
+    String findAllWithAnoymous(Integer pageNo, Integer pageSize);
 }
