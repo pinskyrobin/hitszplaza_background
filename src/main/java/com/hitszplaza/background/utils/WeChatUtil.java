@@ -36,8 +36,8 @@ public class WeChatUtil {
     }
 
     /**
+     * @return Acess的pojo对象, 含accessId(仅做主键用), accessToken及过期时间expireTime(通常为7200s)
      * @description 获取access_token的接口地址, 限2000(次/天)
-     * @return Acess的pojo对象,含accessId(仅做主键用),accessToken及过期时间expireTime(通常为7200s)
      **/
     public Access getToken() {
         Access token;
@@ -62,47 +62,30 @@ public class WeChatUtil {
         return token;
     }
 
-    /**
-     * @description 分批获取集合记录
-     * @param number: 每批记录的数量
-     * @param database: 记录所属集合
-     * @param preQuery: 查询语句前部分
-     * @return List/<Object/>形式的jsonArray数组,每一个元素为查询所得记录
-     **/
-    public List<Object> queryBatch(Integer number, String database, String preQuery) {
+    /***
+     * @description 分页查询数据
+     * @param pageNo 页数（从0开始）
+     * @param pageSize 页大小
+     * @param preQuery 查询语句前半部分
+     * @return String 格式的 json 串，包含 errcode、errmsg、pager 和 data 四个属性，
+     *          pager 存储分页信息，data 存储数据。
+     */
+    public String pageQuery(Integer pageNo, Integer pageSize, String preQuery) {
         // 获取最新的access_token
         updateAccessToken();
 
-        // 获取集合的记录总数
-        String countUrl = WeChatAPIConstant.WX_API_HOST +
-                "/tcb/databasecount?access_token=";
-        String countQuery = String.format("db.collection(\"%s\").count()", database);
-        String countResponse = post(countUrl, countQuery);
-        int count = (Integer) new JSONObject(countResponse).get("count");
-
-        // 默认每次查询20条
-        if (number == null) {
-            number = 20;
-        }
-        // 查询轮数
-        int batchTimes = (int) Math.ceil((double) count / number);
         // 请求地址
-        String url = WeChatAPIConstant.WX_API_HOST +
-                    "/tcb/databasequery?access_token=";
+        String url = WeChatAPIConstant.WX_API_HOST + "/tcb/databasequery?access_token=";
 
-        int skipCount;
-        String raw_response;
-        JSONArray jsonResponse = new JSONArray();
+        String query = preQuery + String.format(".limit(%d).skip(%d).get()"
+                , pageSize, pageNo * pageSize);
 
-        for (int i = 0; i < batchTimes; i++) {
-            skipCount = i * number;
-            String query = preQuery + String.format(".limit(%d).skip(%d).get()"
-                    , number, skipCount);
-            raw_response = post(url, query);
-            jsonResponse.putAll(new JSONObject(raw_response).getJSONArray("data"));
-        }
-        return jsonResponse.toList();
+        String response = post(url, query);
+        System.out.println(query);
+        System.out.println(response);
+        return response;
     }
+
     /**
      * @description 通用微信请求模板
      * @method POST
