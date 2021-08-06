@@ -1,53 +1,26 @@
 package com.hitszplaza.background.service.impl;
 
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.hitszplaza.background.mapper.SwiperMapper;
 import com.hitszplaza.background.pojo.Swiper;
 import com.hitszplaza.background.service.SwiperService;
+import com.hitszplaza.background.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
 public class SwiperServiceImpl implements SwiperService {
 
     @Autowired
-    private SwiperMapper swiperMapper;
-
-    //TODO: swiper 中比较重要的部分是如何根据 start_time 和 end_time 自动变换 status
-    //      另外就是如何在 swiper 状态为 active 时让 swiper 显示在小程序正确的位置上。
-
-    /***
-     * @description 向数据库添加 swiper
-     * @param swiper swiper 实体类
-     */
-    @Override
-    public void addSwiper(Swiper swiper) {
-        if (swiper.getCurrStatus() == null) {
-            swiper.setCurrStatus(0);
-        }
-        swiper.setStartTime(new Timestamp(new Date(swiper.getStartTime().getTime() * 1000).getTime()));
-        swiper.setEndTime(new Timestamp(new Date(swiper.getEndTime().getTime() * 1000).getTime()));
-        System.out.println(swiper.getStartTime());
-        int is_success = swiperMapper.upload2Database(swiper);
-        if (is_success == 1) {
-            log.info("新增 swiper 数据成功！");
-        } else {
-            log.warn("未新增任何 swiper 数据！");
-        }
-    }
+    private RedisUtil redisUtil;
 
     /***
      * @description 上传 swiper 至服务器(不包括传至数据库)
@@ -73,56 +46,123 @@ public class SwiperServiceImpl implements SwiperService {
                 Map<String, String> map = new HashMap<>();
                 map.put("fileName", fileName);
                 map.put("filePath", filePath);
-                System.out.println(fileName);
-                System.out.println(filePath);
-                return response.put("status", true).put("msg", map);
+                response.put("status", true).put("msg", map);
             } catch (FileNotFoundException e) {
-                return response.put("status", false).put("msg", "上传文件失败 FileNotFoundException：" + e.getMessage());
+                response.put("status", false).put("msg", "上传文件失败 FileNotFoundException：" + e.getMessage());
             } catch (IOException e) {
-                return response.put("status", false).put("msg", "上传文件失败 IOException：" + e.getMessage());
+                response.put("status", false).put("msg", "上传文件失败 IOException：" + e.getMessage());
             }
         } else {
-            return response.put("status", false).put("msg", "File is empty!");
+            response.put("status", false).put("msg", "File is empty!");
+        }
+        return response;
+    }
+
+    /***
+     * @description 查找特定状态的 swiper （不支持分页）
+     */
+    @Override
+    public List<Swiper> find(Integer currStatus) {
+        Swiper swiper;
+        List<Swiper> swiperList = new ArrayList<>();
+        for (String key : redisUtil.hashGets("swiper_*")) {
+            swiper = hashGetSwiper(redisUtil.hashGet(key));
+            if (currStatus == null || currStatus.equals(swiper.getCurrStatus())) {
+                swiperList.add(swiper);
+            }
+        }
+        return swiperList;
+    }
+
+    /***
+     * @description 将 swiper 数据存至数据库
+     */
+    @Override
+    public Boolean add(Swiper swiper) {
+        try {
+            Integer swiperId = Integer.valueOf(redisUtil.get("swiperId"));
+            Boolean success = update(swiperId, swiper);
+            if (success) {
+                redisUtil.update("swiperId", (++swiperId).toString());
+            }
+            return success;
+        } catch (NumberFormatException e) {
+            e.printStackTrace();
+            log.error("从 Redis 取得的 swiperId 为 String 类型，转换为 Integer 时发生格式错误！");
+            return false;
         }
     }
 
     /***
-     * @description 查询所有 swiper（已实现分页查询）
-     * @param pageNo 第几页
-     * @param pageSize 每页 swiper 数量
-     * @return 包含当前页信息以及页位置的类，returnVal.data.list 中存储查询结果
+     * @description 更新 swiper 及过期时间
+     * @param swiper 一定要传完整的swiper(除 currStatus 字段)！否则未传的字段会被空值覆盖
      */
     @Override
-    public PageInfo<Swiper> findAll(int pageNo, int pageSize) {
-        PageHelper.startPage(pageNo, pageSize);
-        return new PageInfo<>(swiperMapper.findAll());
-    }
-
-    /***
-     * @description 依据状态筛选 swiper
-     * @param pageNo 第几页
-     * @param pageSize 每页 swiper 数量
-     * @param status swiper 的状态
-     * @return 包含当前页信息以及页位置的类，returnVal.data.list 中存储查询结果
-     */
-    @Override
-    public PageInfo<Swiper> find(int pageNo, int pageSize, int status) {
-        PageHelper.startPage(pageNo, pageSize);
-        return new PageInfo<>(swiperMapper.find(status));
-    }
-
-    /***
-     * @description 根据 swiperId 删除 swiper
-     * @param swiperId swiper 表的主键
-     */
-    @Override
-    public void delete(Integer swiperId) {
-        int is_success = swiperMapper.delete(swiperId);
-        if (is_success == 1) {
-            log.info("swiperId = {} 的 swiper 删除成功！", swiperId);
+    public Boolean update(Integer swiperId, Swiper swiper) {
+        if (swiper.getCurrStatus() == null) {
+            swiper.setCurrStatus(0);
+        }
+        String key = "swiper_" + swiperId;
+        BeanMap beanMap = BeanMap.create(swiper);
+        HashMap<String, String> map = new HashMap<>();
+        for (Object o : beanMap.entrySet()) {
+            Map.Entry<String, Object> entry = (Map.Entry<String, Object>) o;
+            String _key = entry.getKey();
+            Object _value = entry.getValue();
+            map.put(_key, _value != null ? String.valueOf(_value) : null);
+        }
+        boolean success =  redisUtil.hashUpdate(key, map);
+        if (success) {
+            log.info("swiperId = {} 的 swiper 更新成功！", swiperId);
         } else {
-            log.warn("对 swiperId = {} 的删除无效！未删除任何 swiper！", swiperId);
+            log.warn("对 swiperId = {} 的更新无效！未更新任何 swiper！", swiperId);
         }
+        Long time = Long.parseLong(map.get("startTime")) - System.currentTimeMillis();
+        success = redisUtil.set("PTTL_" + key, time.toString(), time);
+        if (success) {
+            log.info("swiperId = {} 的有效期更新成功！", swiperId);
+        } else {
+            log.warn("对 swiperId = {} 的有效期更新无效！未更新任何 swiper 的有效期！", swiperId);
+        }
+        return success;
+    }
+
+    public Boolean updateStatus(Integer swiperId, Integer nextStatus) {
+        String key = "swiper_" + swiperId;
+        boolean success =  redisUtil.hashSetField(key, "currStatus", nextStatus.toString());
+        if (success) {
+            log.info("swiperId = {} 的 swiper 更新成功！", swiperId);
+        } else {
+            log.warn("对 swiperId = {} 的更新无效！未更新任何 swiper！", swiperId);
+        }
+        return success;
+    }
+
+    @Override
+    public Boolean delete(Integer _swiperId) {
+        String key = "swiper_" + _swiperId;
+        Boolean success = redisUtil.delete(key);
+        if (success) {
+            log.info("swiperId = {} 的 swiper 删除成功！", _swiperId);
+        } else {
+            log.warn("对 swiperId = {} 的删除无效！未删除任何 swiper！", _swiperId);
+        }
+        return success;
+    }
+
+    /***
+     * @description  将 swiper 类型的 Map转换为实体类
+     */
+    public Swiper hashGetSwiper(Map<Object, Object> map) {
+        Swiper swiper = new Swiper();
+        swiper.setClickUrl((String) map.get("clickUrl"));
+        swiper.setStorageDir((String) map.get("storageDir"));
+        if (map.get("currStatus") != null) {
+            swiper.setCurrStatus(Integer.valueOf(map.get("currStatus").toString()));
+        }
+        swiper.setInfo((String) map.get("info"));
+        swiper.setStartTime(Long.valueOf(map.get("startTime").toString()));
+        return swiper;
     }
 
     /**
@@ -152,4 +192,5 @@ public class SwiperServiceImpl implements SwiperService {
         if (!upload.exists()) upload.mkdirs();
         return upload.getAbsolutePath();
     }
+
 }
