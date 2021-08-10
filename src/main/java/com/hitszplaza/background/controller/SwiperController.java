@@ -1,6 +1,5 @@
 package com.hitszplaza.background.controller;
 
-import com.github.pagehelper.PageInfo;
 import com.hitszplaza.background.pojo.Swiper;
 import com.hitszplaza.background.service.impl.SwiperServiceImpl;
 import org.json.JSONObject;
