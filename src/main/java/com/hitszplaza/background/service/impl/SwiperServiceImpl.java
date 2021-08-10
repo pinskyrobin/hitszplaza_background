@@ -19,6 +19,8 @@ import java.util.*;
 @Service
 public class SwiperServiceImpl implements SwiperService {
 
+    private Integer swiperId;
+
     @Autowired
     private RedisUtil redisUtil;
 
@@ -46,14 +48,14 @@ public class SwiperServiceImpl implements SwiperService {
                 Map<String, String> map = new HashMap<>();
                 map.put("fileName", fileName);
                 map.put("filePath", filePath);
-                response.put("status", true).put("msg", map);
+                response.put("errcode", 0).put("errmsg", map);
             } catch (FileNotFoundException e) {
-                response.put("status", false).put("msg", "上传文件失败 FileNotFoundException：" + e.getMessage());
+                response.put("errcode", -1).put("errmsg", "上传文件失败 FileNotFoundException：" + e.getMessage());
             } catch (IOException e) {
-                response.put("status", false).put("msg", "上传文件失败 IOException：" + e.getMessage());
+                response.put("errcode", -2).put("errmsg", "上传文件失败 IOException：" + e.getMessage());
             }
         } else {
-            response.put("status", false).put("msg", "File is empty!");
+            response.put("errcode", -3).put("errmsg", "File is empty!");
         }
         return response;
     }
@@ -68,6 +70,7 @@ public class SwiperServiceImpl implements SwiperService {
         for (String key : redisUtil.hashGets("swiper_*")) {
             swiper = hashGetSwiper(redisUtil.hashGet(key));
             if (currStatus == null || currStatus.equals(swiper.getCurrStatus())) {
+                swiper.setSwiperId(Integer.parseInt(key.substring(key.lastIndexOf("_") + 1)));
                 swiperList.add(swiper);
             }
         }
@@ -78,19 +81,17 @@ public class SwiperServiceImpl implements SwiperService {
      * @description 将 swiper 数据存至数据库
      */
     @Override
-    public Boolean add(Swiper swiper) {
-        try {
-            Integer swiperId = Integer.valueOf(redisUtil.get("swiperId"));
-            Boolean success = update(swiperId, swiper);
-            if (success) {
-                redisUtil.update("swiperId", (++swiperId).toString());
-            }
-            return success;
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-            log.error("从 Redis 取得的 swiperId 为 String 类型，转换为 Integer 时发生格式错误！");
-            return false;
+    public Integer add(Swiper swiper) {
+        int id = Integer.parseInt(redisUtil.get("swiperId"));
+        setSwiperId(id);
+        swiper.setSwiperId(id);
+        Integer status = update(swiper);
+        if (status == 0) {
+            redisUtil.update("swiperId", (++swiperId).toString());
+        } else {
+            delete(id);
         }
+        return status;
     }
 
     /***
@@ -98,11 +99,11 @@ public class SwiperServiceImpl implements SwiperService {
      * @param swiper 一定要传完整的swiper(除 currStatus 字段)！否则未传的字段会被空值覆盖
      */
     @Override
-    public Boolean update(Integer swiperId, Swiper swiper) {
+    public Integer update(Swiper swiper) {
         if (swiper.getCurrStatus() == null) {
             swiper.setCurrStatus(0);
         }
-        String key = "swiper_" + swiperId;
+        String key = "swiper_" + swiper.getSwiperId();
         BeanMap beanMap = BeanMap.create(swiper);
         HashMap<String, String> map = new HashMap<>();
         for (Object o : beanMap.entrySet()) {
@@ -113,18 +114,26 @@ public class SwiperServiceImpl implements SwiperService {
         }
         boolean success =  redisUtil.hashUpdate(key, map);
         if (success) {
-            log.info("swiperId = {} 的 swiper 更新成功！", swiperId);
+            log.info("swiperId = {} 的 swiper 更新成功！", swiper.getSwiperId());
         } else {
-            log.warn("对 swiperId = {} 的更新无效！未更新任何 swiper！", swiperId);
+            log.warn("对 swiperId = {} 的更新无效！未更新任何 swiper！", swiper.getSwiperId());
         }
         Long time = Long.parseLong(map.get("startTime")) - System.currentTimeMillis();
-        success = redisUtil.set("PTTL_" + key, time.toString(), time);
-        if (success) {
-            log.info("swiperId = {} 的有效期更新成功！", swiperId);
+        boolean PTTLsuccess = redisUtil.set("PTTL_" + key, time.toString(), time);
+        if (PTTLsuccess) {
+            log.info("swiperId = {} 的有效期更新成功！", swiper.getSwiperId());
         } else {
-            log.warn("对 swiperId = {} 的有效期更新无效！未更新任何 swiper 的有效期！", swiperId);
+            log.warn("对 swiperId = {} 的有效期更新无效！未更新任何 swiper 的有效期！", swiper.getSwiperId());
         }
-        return success;
+        if (success && PTTLsuccess) {
+            return 0;
+        } else if(!success && PTTLsuccess) {
+            return -1;
+        } else if(success) {
+            return -2;
+        } else {
+            return -3;
+        }
     }
 
     public Boolean updateStatus(Integer swiperId, Integer nextStatus) {
@@ -141,6 +150,8 @@ public class SwiperServiceImpl implements SwiperService {
     @Override
     public Boolean delete(Integer _swiperId) {
         String key = "swiper_" + _swiperId;
+        String PTTLkey = "PTTL_swiper_" + _swiperId;
+        redisUtil.delete(PTTLkey);
         Boolean success = redisUtil.delete(key);
         if (success) {
             log.info("swiperId = {} 的 swiper 删除成功！", _swiperId);
@@ -193,4 +204,11 @@ public class SwiperServiceImpl implements SwiperService {
         return upload.getAbsolutePath();
     }
 
+    public Integer getSwiperId() {
+        return swiperId;
+    }
+
+    public void setSwiperId(Integer swiperId) {
+        this.swiperId = swiperId;
+    }
 }

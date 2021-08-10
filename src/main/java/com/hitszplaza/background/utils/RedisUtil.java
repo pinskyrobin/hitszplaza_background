@@ -1,6 +1,8 @@
 package com.hitszplaza.background.utils;
 
+import io.lettuce.core.RedisCommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -74,7 +76,7 @@ public class RedisUtil {
     public Boolean hashSetField(String key, String field, String val) {
         boolean result = false;
         try {
-            redisTemplate.opsForHash().put(key, field,val);
+            redisTemplate.opsForHash().put(key, field, val);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -98,7 +100,7 @@ public class RedisUtil {
     }
 
     public Set<String> hashGets(String pattern) {
-        Set<String > result = new HashSet<>();
+        Set<String> result = new HashSet<>();
         try {
             result = redisTemplate.keys(pattern);
         } catch (Exception e) {
@@ -106,7 +108,6 @@ public class RedisUtil {
         }
         return result;
     }
-
 
 
 }

@@ -9,7 +9,7 @@ import java.util.List;
 public interface SwiperService {
     JSONObject uploadSwiper(MultipartFile originalSwiper);
     List<Swiper> find(Integer currStatus);
-    Boolean add(Swiper swiper);
-    Boolean update(Integer swiperId, Swiper swiper);
+    Integer add(Swiper swiper);
+    Integer update(Swiper swiper);
     Boolean delete(Integer swiperId);
 }

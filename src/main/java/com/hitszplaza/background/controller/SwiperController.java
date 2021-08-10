@@ -34,25 +34,26 @@ public class SwiperController {
     @PostMapping
     public String addSwiper(@RequestBody Swiper swiper) {
         JSONObject response = new JSONObject();
-        Boolean status = swiperService.add(swiper);
-        Integer errcode = (status) ? 0 : -1;
-        response.put("errcode", errcode);
-        if (status) {
+        Integer status = swiperService.add(swiper);
+        response.put("errcode", status);
+        if (status == 0) {
             response.put("errmsg", "添加成功！");
+        } else if (status == -1) {
+            response.put("errmsg", "添加失败！swiper 数据上传至数据库时出错！");
+        } else if (status == -2) {
+            response.put("errmsg", "添加失败！倒计时设置出错！可能是设定时间早于当前时间！");
         } else {
-            response.put("errmsg", "添加失败，原因见日志文件！");
+            response.put("errmsg", "添加失败！");
         }
         return response.toString();
     }
 
     @PatchMapping
-    public String updateSwiper(@RequestParam Integer swiperId,
-                                   @RequestBody Swiper swiper) {
+    public String updateSwiper(@RequestBody Swiper swiper) {
         JSONObject response = new JSONObject();
-        Boolean status = swiperService.update(swiperId, swiper);
-        Integer errcode = (status) ? 0 : -1;
-        response.put("errcode", errcode);
-        if (status) {
+        Integer status = swiperService.update(swiper);
+        response.put("errcode", status);
+        if (status == 0) {
             response.put("errmsg", "更新成功！");
         } else {
             response.put("errmsg", "更新失败，原因见日志文件！");
