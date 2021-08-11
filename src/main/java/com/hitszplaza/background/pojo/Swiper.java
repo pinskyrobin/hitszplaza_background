@@ -6,7 +6,7 @@ import lombok.Data;
 public class Swiper {
     private Integer swiperId;
     private String clickUrl;
-    private String storageDir;
+    private String accessUrl;
     private String info;
     private Integer currStatus;
     private Long startTime;

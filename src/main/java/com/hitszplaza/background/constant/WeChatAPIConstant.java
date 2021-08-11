@@ -1,6 +1,8 @@
 package com.hitszplaza.background.constant;
 
 public interface WeChatAPIConstant {
+    String BASE_URL = "https://hitszplaza.com:8443";
+    String STORAGE_DIR = "/usr/share/projects/hitszplaza/file/";
     String WX_API_HOST = "https://api.weixin.qq.com";
     String WX_APPID = "wx7da91e0e693a55e0";
     String WX_APPSECRET = "328d407b566f8184bc949cebe11862d1";
