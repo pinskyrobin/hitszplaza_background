@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -19,6 +18,11 @@ public class SwiperController {
     @GetMapping
     public List<Swiper> findAllSwiper() {
         return swiperService.find(null);
+    }
+
+    @GetMapping("/id")
+    public String findSwiperBySwiperId(@RequestParam Integer swiperId) {
+        return swiperService.findBySwiperId(swiperId).toString();
     }
 
     @GetMapping("/status")

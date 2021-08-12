@@ -64,6 +64,8 @@ public class SwiperServiceImpl implements SwiperService {
         return response;
     }
 
+
+
     /***
      * @description 查找特定状态的 swiper （不支持分页）
      */
@@ -79,6 +81,22 @@ public class SwiperServiceImpl implements SwiperService {
             }
         }
         return swiperList;
+    }
+
+    /***
+     * @description 按 swiperId 查找 swiper
+     */
+    @Override
+    public JSONObject findBySwiperId(Integer id) {
+        JSONObject response = new JSONObject();
+        String key = "swiper_" + id;
+        try {
+            Map<Object, Object> map = redisUtil.hashGet(key);
+            response.put("errcode", 0).put("errmsg", map);
+        } catch (Exception e) {
+            response.put("errcode", -2).put("errmsg", e.getMessage());
+        }
+        return response;
     }
 
     /***
