@@ -1,6 +1,8 @@
 package com.hitszplaza.background.controller;
 
+import com.google.gson.JsonObject;
 import com.hitszplaza.background.service.impl.UserPosterServiceImpl;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,55 +13,43 @@ public class UserPosterController {
     @Autowired
     private UserPosterServiceImpl userPosterService;
 
+    @GetMapping("/count")
+    public JsonObject count(@RequestBody String match) {
+        return userPosterService.count(match);
+    }
+
+    @GetMapping
+    public JsonObject find(@RequestParam String id) {
+        return userPosterService.find(id);
+    }
+
     @GetMapping("/all")
-    public String findAllUserPoster(@RequestParam Integer pageNo,
-                                    @RequestParam(defaultValue = "20") Integer pageSize) {
-        return userPosterService.findAll(pageNo, pageSize);
+    public JsonObject findAllUserPoster(@RequestParam Integer pageNo,
+                                        @RequestParam(defaultValue = "20") Integer pageSize) {
+        return userPosterService.findAll(pageNo - 1, pageSize);
     }
 
-    @GetMapping("/openId")
-    public String findUserPosterByOpenId(@RequestParam Integer pageNo,
-                                         @RequestParam(defaultValue = "20") Integer pageSize,
-                                         @RequestParam String openid) {
-        return userPosterService.findAllWithOpenId(pageNo, pageSize, openid);
+    @GetMapping("/condition")
+    public JsonObject findByCondition(@RequestParam Integer pageNo,
+                                      @RequestParam(defaultValue = "20") Integer pageSize,
+                                      @RequestBody String match) {
+        return userPosterService.findByCondition(pageNo - 1, pageSize, match);
     }
 
-    //TODO:关于日期格式的问题,待验证
-    @GetMapping("/time")
-    public String findUserPosterByDate(@RequestParam Integer pageNo,
-                                       @RequestParam(defaultValue = "20") Integer pageSize,
-                                       @RequestParam Long startTime,
-                                       @RequestParam Long endTime) {
-        return userPosterService.findAllWithTime(pageNo, pageSize, startTime, endTime);
+    @PatchMapping
+    public JsonObject updateUserPosterStatus(@RequestParam String id,
+                                             @RequestParam Boolean valid) {
+        return userPosterService.updateStatus(1, id, valid);
     }
 
-    @GetMapping("/type")
-    public String findUserPosterByType(@RequestParam Integer pageNo,
-                                       @RequestParam(defaultValue = "20") Integer pageSize,
-                                       @RequestParam String type) {
-        return userPosterService.findAllWithType(pageNo, pageSize, type);
+    @PatchMapping("/all")
+    public JsonObject updateAllUserPosterStatus(@RequestParam String openid,
+                                                @RequestParam Boolean valid) {
+        return userPosterService.updateStatus(2, openid, valid);
     }
 
-    @GetMapping("/anonymous")
-    public String findUserPosterByAnonymous(@RequestParam Integer pageNo,
-                                            @RequestParam(defaultValue = "20") Integer pageSize) {
-        return userPosterService.findAllWithAnoymous(pageNo, pageSize);
-    }
-
-    @PatchMapping("/oneStatus")
-    public String updateUserPosterStatus(@RequestParam String id,
-                                         @RequestParam Boolean valid) {
-        return userPosterService.updateOneStatus(id, valid);
-    }
-
-    @PatchMapping("/allStatus")
-    public String updateAllUserPosterStatus(@RequestParam String openid,
-                                            @RequestParam Boolean valid) {
-        return userPosterService.updateAllStatusWithOpenId(openid, valid);
-    }
-
-    @DeleteMapping("/")
-    public String deleteUserPoster(@RequestParam String id) {
+    @DeleteMapping
+    public JsonObject deleteUserPoster(@RequestParam String id) {
         return userPosterService.deleteOne(id);
     }
 }

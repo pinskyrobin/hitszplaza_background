@@ -1,19 +1,17 @@
 package com.hitszplaza.background.service;
 
+import com.google.gson.JsonObject;
+
 public interface UserPosterService {
-    String findAll(Integer pageNo, Integer pageSize);
+    JsonObject count(String match);
 
-    String updateOneStatus(String id, Boolean valid);
+    JsonObject find(String id);
 
-    String updateAllStatusWithOpenId(String openId, Boolean valid);
+    JsonObject findAll(Integer pageNo, Integer pageSize);
 
-    String deleteOne(String id);
+    JsonObject findByCondition(Integer pageNo, Integer pageSize, String match);
 
-    String findAllWithOpenId(Integer pageNo, Integer pageSize, String openId);
+    JsonObject updateStatus(Integer mode, String id, Boolean valid);
 
-    String findAllWithType(Integer pageNo, Integer pageSize, String type);
-
-    String findAllWithTime(Integer pageNo, Integer pageSize, Long startTime, Long endTime);
-
-    String findAllWithAnoymous(Integer pageNo, Integer pageSize);
+    JsonObject deleteOne(String id);
 }
