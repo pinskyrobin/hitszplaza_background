@@ -5,14 +5,12 @@ import com.hitszplaza.background.pojo.Access;
 import com.hitszplaza.background.pojo.QueryDTO;
 import com.hitszplaza.background.exception.WeChatException;
 import lombok.extern.slf4j.Slf4j;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Component
@@ -81,8 +79,6 @@ public class WeChatUtil {
                 , pageSize, pageNo * pageSize);
 
         String response = post(url, query);
-        System.out.println(query);
-        System.out.println(response);
         return response;
     }
 
