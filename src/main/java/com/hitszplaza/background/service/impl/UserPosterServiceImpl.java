@@ -17,15 +17,6 @@ public class UserPosterServiceImpl implements UserPosterService {
     @Autowired
     private WeChatUtil weChatUtil;
 
-    @Override
-    public JsonObject count(String match) {
-        String query = String.format(WeChatDataBaseQueryConstant.COUNTER, "userPoster", match, "posterNum");
-        String url = WeChatAPIConstant.WX_API_HOST + "/tcb/databaseaggregate?access_token=";
-        System.out.println(query);
-        String response = weChatUtil.post(url, query);
-        return new Gson().fromJson(response, JsonObject.class);
-    }
-
     /***
      * @description 根据 _id 获取帖子
      */

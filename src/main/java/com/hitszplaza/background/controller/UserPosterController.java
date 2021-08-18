@@ -13,11 +13,6 @@ public class UserPosterController {
     @Autowired
     private UserPosterServiceImpl userPosterService;
 
-    @GetMapping("/count")
-    public JsonObject count(@RequestBody String match) {
-        return userPosterService.count(match);
-    }
-
     @GetMapping
     public JsonObject find(@RequestParam String id) {
         return userPosterService.find(id);

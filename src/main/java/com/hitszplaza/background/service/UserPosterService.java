@@ -3,7 +3,6 @@ package com.hitszplaza.background.service;
 import com.google.gson.JsonObject;
 
 public interface UserPosterService {
-    JsonObject count(String match);
 
     JsonObject find(String id);
 
