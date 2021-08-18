@@ -1,7 +1,13 @@
 package com.hitszplaza.background.service;
 
-public interface UserInfoService {
-    String find(String openId);
+import com.google.gson.JsonObject;
 
-    String findAll(Integer pageNo, Integer pageSize);
+public interface UserInfoService {
+    JsonObject find(String openId);
+
+    JsonObject findAll(Integer pageNo, Integer pageSize);
+
+    JsonObject findByCondition(Integer pageNo, Integer pageSize, String match);
+
+    JsonObject updateStatus(String openId, Boolean valid);
 }

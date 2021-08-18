@@ -3,7 +3,7 @@ package com.hitszplaza.background.constant;
 public interface WeChatDataBaseQueryConstant {
     String COUNTER = "db.collection('%s').aggregate()\n" +
             "    .match(%s)\n" +
-            "    .count('%s')\n" +
+            "    .count('count')\n" +
             "    .end()";
 
     String USER_POSTER_FIND_ALL = "db.collection('userPoster').aggregate()\n" +
@@ -165,5 +165,11 @@ public interface WeChatDataBaseQueryConstant {
             "    .project({\n" +
             "        commentList: 0,\n" +
             "    })\n" +
+            "    .end()";
+
+    String USER_INFO_FIND_BY_OPERATION = "db.collection('userInfo').aggregate()\n" +
+            "    .match(%s)\n" +
+            "    .skip(%d)\n" +
+            "    .limit(%d)\n" +
             "    .end()";
 }
