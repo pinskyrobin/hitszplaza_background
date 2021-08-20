@@ -41,16 +41,18 @@ public class UserPosterServiceImpl implements UserPosterService {
         return new Gson().fromJson(response, JsonObject.class);
     }
 
-
+    /***
+     * @description 条件查找
+     * @param match 筛选语句
+     */
     @Override
     public JsonObject findByCondition(Integer pageNo, Integer pageSize, String match) {
-        String query =  String.format(WeChatDataBaseQueryConstant.USER_POSTER_FIND_BY_OPERATION,
+        String query = String.format(WeChatDataBaseQueryConstant.USER_POSTER_FIND_BY_OPERATION,
                 match, pageNo, pageSize);
         String url = WeChatAPIConstant.WX_API_HOST + "/tcb/databaseaggregate?access_token=";
         String response = weChatUtil.post(url, query);
         return new Gson().fromJson(response, JsonObject.class);
     }
-
 
 
     /***

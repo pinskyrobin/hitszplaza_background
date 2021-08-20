@@ -172,4 +172,93 @@ public interface WeChatDataBaseQueryConstant {
             "    .skip(%d)\n" +
             "    .limit(%d)\n" +
             "    .end()";
+
+    String FEEDBACK_FIND_ALL = "db.collection('feedBack').aggregate()\n" +
+            "    .skip(%d)\n" +
+            "    .limit(%d)\n" +
+            "    .sort({\n" +
+            "        createTime: -1\n" +
+            "    })\n" +
+            "    .lookup({\n" +
+            "        from: 'userInfo',\n" +
+            "        let: {\n" +
+            "            user_id: '$_openid'\n" +
+            "        },\n" +
+            "        pipeline: $.pipeline()\n" +
+            "            .match(_.expr($.and([\n" +
+            "                $.eq(['$_id', '$$user_id'])\n" +
+            "            ])))\n" +
+            "            .project({\n" +
+            "                avatarUrl: 1,\n" +
+            "                nickName: 1,\n" +
+            "            })\n" +
+            "            .done(),\n" +
+            "        as: 'author'\n" +
+            "    })\n" +
+            "    .replaceRoot({\n" +
+            "        newRoot: $.mergeObjects([$.arrayElemAt(['$author', 0]), '$$ROOT'])\n" +
+            "    })\n" +
+            "    .project({\n" +
+            "        author: 0\n" +
+            "    })\n" +
+            "    .end()";
+
+    String FEEDBACK_FIND_BY_ID = "db.collection('feedBack').aggregate()\n" +
+            "    .match(_.expr(" +
+            "       $.eq(['$_id','%s'])" +
+            "    ))\n" +
+            "    .lookup({\n" +
+            "        from: 'userInfo',\n" +
+            "        let: {\n" +
+            "            user_id: '$_openid'\n" +
+            "        },\n" +
+            "        pipeline: $.pipeline()\n" +
+            "            .match(_.expr($.and([\n" +
+            "                $.eq(['$_id', '$$user_id'])\n" +
+            "            ])))\n" +
+            "            .project({\n" +
+            "                avatarUrl: 1,\n" +
+            "                nickName: 1,\n" +
+            "            })\n" +
+            "            .done(),\n" +
+            "        as: 'author'\n" +
+            "    })\n" +
+            "    .replaceRoot({\n" +
+            "        newRoot: $.mergeObjects([$.arrayElemAt(['$author', 0]), '$$ROOT'])\n" +
+            "    })\n" +
+            "    .project({\n" +
+            "        author: 0\n" +
+            "    })\n" +
+            "    .end()";
+
+    String FEEDBACK_FIND_BY_CONDITION = "db.collection('feedBack').aggregate()\n" +
+            "    .match(%s)\n" +
+            "    .skip(%d)\n" +
+            "    .limit(%d)\n" +
+            "    .sort({\n" +
+            "        createTime: -1\n" +
+            "    })\n" +
+            "    .lookup({\n" +
+            "        from: 'userInfo',\n" +
+            "        let: {\n" +
+            "            user_id: '$_openid'\n" +
+            "        },\n" +
+            "        pipeline: $.pipeline()\n" +
+            "            .match(_.expr($.and([\n" +
+            "                $.eq(['$_id', '$$user_id'])\n" +
+            "            ])))\n" +
+            "            .project({\n" +
+            "                avatarUrl: 1,\n" +
+            "                nickName: 1,\n" +
+            "            })\n" +
+            "            .done(),\n" +
+            "        as: 'author'\n" +
+            "    })\n" +
+            "    .replaceRoot({\n" +
+            "        newRoot: $.mergeObjects([$.arrayElemAt(['$author', 0]), '$$ROOT'])\n" +
+            "    })\n" +
+            "    .project({\n" +
+            "        author: 0\n" +
+            "    })\n" +
+            "    .end()";;
 }
