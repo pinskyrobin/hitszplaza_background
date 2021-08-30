@@ -6,12 +6,16 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+@SuppressWarnings("FieldCanBeLocal")
 @RestController
 @RequestMapping("/userPoster")
 public class UserPosterController {
 
     @Autowired
     private UserPosterServiceImpl userPosterService;
+
+    private final int PARTIAL_UPDATE = 1;
+    private final int ALL_UPDATE = 2;
 
     @GetMapping
     public JsonObject find(@RequestParam String id) {
@@ -34,13 +38,13 @@ public class UserPosterController {
     @PatchMapping
     public JsonObject updateUserPosterStatus(@RequestParam String id,
                                              @RequestParam Boolean valid) {
-        return userPosterService.updateStatus(1, id, valid);
+        return userPosterService.updateStatus(PARTIAL_UPDATE, id, valid);
     }
 
     @PatchMapping("/all")
     public JsonObject updateAllUserPosterStatus(@RequestParam String openid,
                                                 @RequestParam Boolean valid) {
-        return userPosterService.updateStatus(2, openid, valid);
+        return userPosterService.updateStatus(ALL_UPDATE, openid, valid);
     }
 
     @DeleteMapping
