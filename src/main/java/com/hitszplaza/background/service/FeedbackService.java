@@ -9,5 +9,7 @@ public interface FeedbackService {
 
     JsonObject findByCondition(Integer pageNo, Integer pageSize, String match);
 
+    JsonObject update(String id, Integer status);
+
     JsonObject delete(String id);
 }

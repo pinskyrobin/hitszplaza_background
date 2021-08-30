@@ -30,6 +30,12 @@ public class FeedbackController {
         return feedbackService.findByCondition(pageNo - 1, pageSize, match);
     }
 
+    @PatchMapping("status")
+    public JsonObject updateStatus(@RequestParam String id,
+                                   @RequestParam Integer status) {
+        return feedbackService.update(id, status);
+    }
+
     @DeleteMapping
     public JsonObject deleteUserPoster(@RequestParam String id) {
         return feedbackService.delete(id);

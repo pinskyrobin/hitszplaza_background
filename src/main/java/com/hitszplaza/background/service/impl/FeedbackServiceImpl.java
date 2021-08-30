@@ -56,6 +56,27 @@ public class FeedbackServiceImpl implements FeedbackService {
         return new Gson().fromJson(response, JsonObject.class);
     }
 
+
+    /***
+     * @description 更新反馈进度
+     */
+    @Override
+    public JsonObject update(String id, Integer status) {
+        String url = WeChatAPIConstant.WX_API_HOST +
+                "/tcb/databaseupdate?access_token=";
+        String query = "db.collection(\"feedBack\")"
+                .concat(String.format(".doc(\"%s\")" +
+                        ".update({data:{status: %d}})", id, status));
+        String response = weChatUtil.post(url, query);
+        JsonObject json = new Gson().fromJson(response, JsonObject.class);
+        if (json.get("matched").getAsInt() == 0) {
+            log.warn("未匹配到任何记录");
+        } else if (json.get("modified").getAsInt() == 0) {
+            log.warn("匹配到记录，但未修改任何记录");
+        }
+        return json;
+    }
+
     /***
      * @description 删除某个userPoster
      * @param id 主键_id
