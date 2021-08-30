@@ -57,9 +57,26 @@ public class UserInfoServiceImpl implements UserInfoService {
         return new Gson().fromJson(response, JsonObject.class);
     }
 
+    /***
+     * @description 提供对用户的若干 boolean 类型字段进行更新
+     * @param property boolean 类型的字段名
+     */
     @Override
-    public JsonObject updateStatus(String openId, Boolean valid) {
-        return null;
+    public JsonObject updateStatus(String openId, String property, Boolean valid) {
+        String tmpValid = valid ? "true" : "false";
+        String url = WeChatAPIConstant.WX_API_HOST +
+                "/tcb/databaseupdate?access_token=";
+        String query = "db.collection(\"userInfo\")"
+                .concat(String.format(".where({_openid: \"%s\"})" +
+                        ".update({data:{%s: %s}})", openId, property, tmpValid));
+        String response = weChatUtil.post(url, query);
+        JsonObject json = new Gson().fromJson(response, JsonObject.class);
+        if (json.get("matched").getAsInt() == 0) {
+            log.warn("未匹配到任何记录");
+        } else if (json.get("modified").getAsInt() == 0) {
+            log.warn("匹配到记录，但未修改任何记录");
+        }
+        return json;
     }
 
 

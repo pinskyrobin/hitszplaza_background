@@ -28,4 +28,11 @@ public class UserInfoController {
                                       @RequestBody String match) {
         return userInfoService.findByCondition(pageNo - 1, pageSize, match);
     }
+
+    @PatchMapping("/status")
+    public JsonObject updateStatus(@RequestParam String openId,
+                                   @RequestParam String property,
+                                   @RequestParam Boolean valid) {
+        return userInfoService.updateStatus(openId, property, valid);
+    }
 }

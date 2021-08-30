@@ -9,5 +9,5 @@ public interface UserInfoService {
 
     JsonObject findByCondition(Integer pageNo, Integer pageSize, String match);
 
-    JsonObject updateStatus(String openId, Boolean valid);
+    JsonObject updateStatus(String openId, String property, Boolean valid);
 }
