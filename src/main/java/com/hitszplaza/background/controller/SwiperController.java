@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/swiper")
+@RequestMapping(value = "/swiper", produces = "application/json;charset=utf-8")
 public class SwiperController {
     @Autowired
     private SwiperServiceImpl swiperService;
