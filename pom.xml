@@ -91,6 +91,20 @@
 			<version>2.8.7</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/us.codecraft/webmagic-core -->
+		<dependency>
+			<groupId>us.codecraft</groupId>
+			<artifactId>webmagic-core</artifactId>
+			<version>0.7.5</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/us.codecraft/webmagic-extension -->
+		<dependency>
+			<groupId>us.codecraft</groupId>
+			<artifactId>webmagic-extension</artifactId>
+			<version>0.7.5</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

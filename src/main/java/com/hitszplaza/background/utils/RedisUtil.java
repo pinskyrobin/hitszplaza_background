@@ -1,8 +1,6 @@
 package com.hitszplaza.background.utils;
 
-import io.lettuce.core.RedisCommandExecutionException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.RedisSystemException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -62,6 +60,56 @@ public class RedisUtil {
             e.printStackTrace();
         }
         return result;
+    }
+
+    /***
+     * 增加集合元素
+     */
+    public void addSet(String key, String value) {
+        try {
+            redisTemplate.opsForSet().add(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 移除集合元素
+     */
+    public Long removeSet(String key, String value) {
+        Long size = 0L;
+        try {
+            size = redisTemplate.opsForSet().remove(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return size;
+    }
+
+    /**
+     * 判断set中是否存在某元素
+     */
+    public Boolean hasValueInSet(String key, String value) {
+        Boolean exist = false;
+        try {
+            exist = redisTemplate.opsForSet().isMember(key, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return exist;
+    }
+
+    /***
+     *  Set 集合计数
+     */
+    public Long countSet(String key) {
+        Long size = null;
+        try {
+            size = redisTemplate.opsForSet().size(key);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return size;
     }
 
     public Map<Object, Object> hashGet(String key) {
