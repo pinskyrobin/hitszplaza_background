@@ -25,12 +25,11 @@ public class NewsSchedule {
                         "https://www.hitsz.edu.cn/article/id-75.html",
                         "https://www.hitsz.edu.cn/article/id-77.html",
                         "https://www.hitsz.edu.cn/article/id-78.html",
-                        "https://www.hitsz.edu.cn/article/id-79.html",
                         "https://www.hitsz.edu.cn/article/id-81.html",
                         "https://www.hitsz.edu.cn/article/id-124.html")
                 .addPipeline(newsPipeline)
                 .setExitWhenComplete(true)
-                .thread(5)
+                .thread(8)
                 .start();
         log.info("新闻抓取任务完成！");
     }

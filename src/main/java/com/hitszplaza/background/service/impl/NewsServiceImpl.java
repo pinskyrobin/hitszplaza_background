@@ -90,7 +90,6 @@ public class NewsServiceImpl implements NewsService {
                         "https://www.hitsz.edu.cn/article/id-75.html",
                         "https://www.hitsz.edu.cn/article/id-77.html",
                         "https://www.hitsz.edu.cn/article/id-78.html",
-                        "https://www.hitsz.edu.cn/article/id-79.html",
                         "https://www.hitsz.edu.cn/article/id-81.html",
                         "https://www.hitsz.edu.cn/article/id-124.html");
             } else {
@@ -98,7 +97,7 @@ public class NewsServiceImpl implements NewsService {
             }
             spider.addPipeline(newsPipeline)
                     .setExitWhenComplete(true)
-                    .thread(3)
+                    .thread(8)
                     .run();
             int afterUpdate = countNews(category).get("errmsg").getAsInt();
             response.addProperty("errcode", 0);
