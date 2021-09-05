@@ -15,7 +15,7 @@ public class NewsSchedule {
     @Autowired
     private NewsPipeline newsPipeline;
 
-    @Scheduled(cron = "0 0 1 * * ? ")
+    @Scheduled(cron = "0 0 1, 13 * * ?")
     public void newsScheduled() {
         log.info("开始新闻抓取任务...");
         Spider.create(newsProcessor)
