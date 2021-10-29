@@ -1,6 +1,6 @@
 package com.hitszplaza.background.crawler;
 
-import com.hitszplaza.background.constant.NewsConstant;
+import com.hitszplaza.background.constant.CrawlConstant;
 import com.hitszplaza.background.pojo.News;
 import com.hitszplaza.background.utils.RedisUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class NewsProcessor implements PageProcessor {
 
     @Override
     public void process(Page page) {
-        if (page.getUrl().regex(NewsConstant.TARGET_URL).match()) {
+        if (page.getUrl().regex(CrawlConstant.NEWS_URL).match()) {
             int category = Integer.parseInt(page.getHtml().xpath("//div[@class='wrapper wrapper_news']/div[@class='header']/div[@class='mainwidth']/div/div[@class='rightside']/div/form/input[@name='pageId']/@value").toString());
             List<Selectable> list = page.getHtml().xpath("//div[@class='wrapper wrapper_news']/div[@class='container_news']/div[@class='mainwidth']/div[@class='mainside_news']/ul/li").nodes();
             String title, picUrl, clickUrl, oringinalReleaseDate;
@@ -45,21 +45,21 @@ public class NewsProcessor implements PageProcessor {
                     case 124:
                         title = s.xpath("//div/a/text()").toString();
                         picUrl = s.xpath("//a/img/@src").toString();
-                        clickUrl = NewsConstant.BASE_URL + s.xpath("//div/a/@href").toString();
+                        clickUrl = CrawlConstant.BASE_URL + s.xpath("//div/a/@href").toString();
                         oringinalReleaseDate = s.xpath("//div/span[@class='date']/text()").toString();
                         break;
                     case 80:
                     case 74:
-                        title = (category == 80) ? s.xpath("//a/text()").toString() :
+                        title = (category == 74) ? s.xpath("//a/text()").toString() :
                                 s.xpath("//a/span/text()").toString() + s.xpath("//a/text()").toString();
                         picUrl = null;
-                        clickUrl = NewsConstant.BASE_URL + s.xpath("//a/@href").toString();
+                        clickUrl = CrawlConstant.BASE_URL + s.xpath("//a/@href").toString();
                         oringinalReleaseDate = s.xpath("//span[@class='date']/text()").toString();
                         break;
                     case 78:
                         title = s.xpath("//div/div[@class='lecture_top']/a/text()").toString();
                         picUrl = null;
-                        clickUrl = NewsConstant.BASE_URL + s.xpath("//div/div[@class='lecture_top']/a/@href").toString();
+                        clickUrl = CrawlConstant.BASE_URL + s.xpath("//div/div[@class='lecture_top']/a/@href").toString();
                         int year = Calendar.getInstance().get(Calendar.YEAR);
                         oringinalReleaseDate = year + "-" + s.xpath("//div/div[@class='lecture_top']/span/text()").toString().substring(0, 2) + "-" +
                                 s.xpath("//div/div[@class='lecture_top']/span/span/text()").toString().substring(0, 2);
@@ -67,7 +67,7 @@ public class NewsProcessor implements PageProcessor {
                     case 81:
                         title = s.xpath("//a/text()").toString();
                         picUrl = null;
-                        clickUrl = NewsConstant.BASE_URL + s.xpath("//a/@href").toString();
+                        clickUrl = CrawlConstant.BASE_URL + s.xpath("//a/@href").toString();
                         oringinalReleaseDate = s.xpath("//span[@class='date']/text()").toString();
                         break;
                     default:

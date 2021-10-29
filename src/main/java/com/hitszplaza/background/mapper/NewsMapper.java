@@ -23,7 +23,7 @@ public interface NewsMapper {
 
     @Select("SELECT * " +
             "FROM news " +
-            "WHERE category=#{category}" +
+            "WHERE category=#{category} " +
             "ORDER BY release_date DESC, pull_time DESC")
     List<News> find(Integer category);
 

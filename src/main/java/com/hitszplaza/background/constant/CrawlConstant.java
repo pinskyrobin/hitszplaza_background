@@ -3,9 +3,11 @@ package com.hitszplaza.background.constant;
 import java.util.HashMap;
 import java.util.Map;
 
-public interface NewsConstant {
+public interface CrawlConstant {
     String BASE_URL = "https://www.hitsz.edu.cn";
-    String TARGET_URL = "https://www.hitsz.edu.cn/article/id-.*";
+    String NEWS_URL = "https://www.hitsz.edu.cn/article/id-.*";
+    String LECTURE_URL = "https://www.hitsz.edu.cn/article/id-78.html";
+
     Map<Integer, String> categoryMap = new HashMap<Integer, String>(){{
         categoryMap.put(116, "校区要闻");
         categoryMap.put(80, "媒体报道");
