@@ -22,7 +22,7 @@ public class UserInfoController {
         return userInfoService.find(openId);
     }
 
-    @GetMapping("/condition")
+    @PostMapping("/condition")
     public JsonObject findByCondition(@RequestParam Integer pageNo,
                                       @RequestParam(defaultValue = "20") Integer pageSize,
                                       @RequestBody String match) {

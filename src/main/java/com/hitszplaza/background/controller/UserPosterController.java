@@ -28,7 +28,7 @@ public class UserPosterController {
         return userPosterService.findAll(pageNo - 1, pageSize);
     }
 
-    @GetMapping("/condition")
+    @PostMapping("/condition")
     public JsonObject findByCondition(@RequestParam Integer pageNo,
                                       @RequestParam(defaultValue = "20") Integer pageSize,
                                       @RequestBody String match) {
