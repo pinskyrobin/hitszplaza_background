@@ -271,7 +271,7 @@ public interface WeChatDataBaseQueryConstant {
             "    .lookup({\n" +
             "        from: 'userInfo',\n" +
             "        let: {\n" +
-            "            user_id: '$_openid'\n" +
+            "            user_id: '$openid'\n" +
             "        },\n" +
             "        pipeline: $.pipeline()\n" +
             "            .match(_.expr($.and([\n" +
@@ -299,7 +299,7 @@ public interface WeChatDataBaseQueryConstant {
             "    .lookup({\n" +
             "        from: 'userInfo',\n" +
             "        let: {\n" +
-            "            user_id: '$_openid'\n" +
+            "            user_id: '$openid'\n" +
             "        },\n" +
             "        pipeline: $.pipeline()\n" +
             "            .match(_.expr($.and([\n" +
@@ -330,7 +330,7 @@ public interface WeChatDataBaseQueryConstant {
             "    .lookup({\n" +
             "        from: 'userInfo',\n" +
             "        let: {\n" +
-            "            user_id: '$_openid'\n" +
+            "            user_id: '$openid'\n" +
             "        },\n" +
             "        pipeline: $.pipeline()\n" +
             "            .match(_.expr($.and([\n" +
@@ -360,7 +360,7 @@ public interface WeChatDataBaseQueryConstant {
             "    .lookup({\n" +
             "        from: 'userInfo',\n" +
             "        let: {\n" +
-            "            user_id: '$_openid'\n" +
+            "            user_id: '$openid'\n" +
             "        },\n" +
             "        pipeline: $.pipeline()\n" +
             "            .match(_.expr($.and([\n" +
@@ -388,7 +388,7 @@ public interface WeChatDataBaseQueryConstant {
             "    .lookup({\n" +
             "        from: 'userInfo',\n" +
             "        let: {\n" +
-            "            user_id: '$_openid'\n" +
+            "            user_id: '$openid'\n" +
             "        },\n" +
             "        pipeline: $.pipeline()\n" +
             "            .match(_.expr($.and([\n" +
@@ -419,7 +419,7 @@ public interface WeChatDataBaseQueryConstant {
             "    .lookup({\n" +
             "        from: 'userInfo',\n" +
             "        let: {\n" +
-            "            user_id: '$_openid'\n" +
+            "            user_id: '$openid'\n" +
             "        },\n" +
             "        pipeline: $.pipeline()\n" +
             "            .match(_.expr($.and([\n" +

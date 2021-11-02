@@ -1,5 +1,8 @@
 package com.hitszplaza.background.utils;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.hitszplaza.background.constant.WeChatAPIConstant;
 import com.hitszplaza.background.pojo.Access;
 import com.hitszplaza.background.pojo.QueryDTO;
@@ -82,6 +85,36 @@ public class WeChatUtil {
         return response;
     }
 
+    /***
+     * @description 通用的更新请求模板
+     * @method PATCH
+     */
+
+    public JsonObject update(String url, String query) {
+        String response = post(url, query);
+        JsonObject json = new Gson().fromJson(response, JsonObject.class);
+        if (json.get("matched").getAsInt() == 0) {
+            log.warn("未匹配到任何记录");
+        } else if (json.get("modified").getAsInt() == 0) {
+            log.warn("匹配到记录，但未修改任何记录");
+        }
+        return json;
+    }
+
+    /***
+     * @description 通用的删除请求模板
+     * @method DELETE
+     */
+
+    public JsonObject delete(String url, String query) {
+        String response = post(url, query);
+        JsonObject json = new Gson().fromJson(response, JsonObject.class);
+        if (json.get("deleted").getAsInt() == 0) {
+            log.warn("未删除任何反馈!");
+        }
+        return json;
+    }
+
     /**
      * @description 通用微信请求模板
      * @method POST
@@ -109,5 +142,18 @@ public class WeChatUtil {
             log.error("微信API调用出现其他错误!");
         }
         return response;
+    }
+
+    public JsonObject toJson(JsonElement source) {
+        String origin = source.toString();
+        StringBuilder res = new StringBuilder();
+        char ch;
+        for (int i = 1; i < origin.length() - 1; i++) {
+            ch = origin.charAt(i);
+            if (ch != '\\') {
+                res.append(origin.charAt(i));
+            }
+        }
+        return new Gson().fromJson(res.toString(), JsonObject.class);
     }
 }
