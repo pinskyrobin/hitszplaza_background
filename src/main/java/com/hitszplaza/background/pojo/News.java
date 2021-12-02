@@ -10,8 +10,10 @@ public class News {
     private Date releaseDate;
     private Long pullTime;
     private String title;
+    private String content;
     private String picUrl;
     private String clickUrl;
     private Integer category;
     private Boolean status;
+    private String views;
 }

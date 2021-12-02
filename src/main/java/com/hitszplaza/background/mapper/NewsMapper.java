@@ -17,8 +17,8 @@ public interface NewsMapper {
             "WHERE category=#{category}")
     int count(Integer category);
 
-    @Insert("INSERT INTO news(fingerprint, release_date, pull_time, title, pic_url, click_url, category)" +
-            "VALUES(#{fingerprint},#{releaseDate},#{pullTime},#{title},#{picUrl},#{clickUrl},#{category})")
+    @Insert("INSERT INTO news(fingerprint, release_date, pull_time, title, pic_url, click_url, category, views, content)" +
+            "VALUES(#{fingerprint},#{releaseDate},#{pullTime},#{title},#{picUrl},#{clickUrl},#{category},#{views},#{content})")
     void insert(News news);
 
     @Select("SELECT * " +

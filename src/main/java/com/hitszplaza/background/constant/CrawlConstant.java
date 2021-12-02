@@ -7,6 +7,7 @@ public interface CrawlConstant {
     String BASE_URL = "https://www.hitsz.edu.cn";
     String NEWS_URL = "https://www.hitsz.edu.cn/article/id-.*";
     String LECTURE_URL = "https://www.hitsz.edu.cn/article/id-78.html";
+    String NEWS_CONTENT_URL = "https://www.hitsz.edu.cn/article/view/id-.*";
 
     Map<Integer, String> categoryMap = new HashMap<Integer, String>(){{
         categoryMap.put(116, "校区要闻");
